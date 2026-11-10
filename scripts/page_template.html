@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gaussian Process Operator</title>
+  <meta name="description" content="GPO: a Gaussian process over PDE solution operators with an operator-embedded kernel, exact inference, stochastic dual descent and joint posterior draws by Matheron's rule.">
+  <meta name="keywords" content="Gaussian process, operator learning, neural operator, uncertainty quantification, Matheron's rule, pathwise conditioning, stochastic dual descent">
+  <meta name="author" content="Sawan Kumar, Rajdip Nayek, Souvik Chakraborty">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Towards Gaussian Process for operator learning">
+  <meta property="og:description" content="Uncertainty-aware operator learning with exact Gaussian process inference and Matheron's rule.">
+  <meta property="og:image" content="static/images/matheron_toy_panels.png">
+  <meta name="citation_title" content="Towards Gaussian Process for operator learning: an uncertainty aware resolution independent operator learning algorithm for computational mechanics">
+  <meta name="citation_author" content="Kumar, Sawan">
+  <meta name="citation_author" content="Nayek, Rajdip">
+  <meta name="citation_author" content="Chakraborty, Souvik">
+  <meta name="citation_journal_title" content="Computer Methods in Applied Mechanics and Engineering">
+  <meta name="citation_doi" content="10.1016/j.cma.2024.117664">
+  <meta name="citation_arxiv_id" content="2409.10972">
+
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+  <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/gpo.css">
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script>window.MathJax = { tex: { inlineMath: [["\\(", "\\)"]] } };</script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<main id="main-content">
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop has-text-centered">
+      <h1 class="title is-1 publication-title">Gaussian Process <span class="acronym">Operator</span></h1>
+      <p class="paper-title">Towards Gaussian Process for operator learning: an uncertainty aware resolution independent
+        operator learning algorithm for computational mechanics</p>
+      <div class="is-size-5 publication-authors" style="margin-top: 1rem">
+        <span class="author-block">Sawan Kumar<sup>1</sup>,</span>
+        <span class="author-block">Rajdip Nayek<sup>1</sup>,</span>
+        <span class="author-block">Souvik Chakraborty<sup>1,2</sup></span>
+      </div>
+      <div class="is-size-6 publication-authors">
+        <span class="author-block"><sup>1</sup>Department of Applied Mechanics, IIT Delhi</span>
+        <span class="author-block"><sup>2</sup>Yardi School of Artificial Intelligence, IIT Delhi</span>
+      </div>
+      <div class="venue is-size-5">Computer Methods in Applied Mechanics and Engineering, 2025</div>
+      <div class="publication-links" style="margin-top: 1.2rem">
+        <span class="link-block"><a href="https://doi.org/10.1016/j.cma.2024.117664" target="_blank" class="external-link button is-normal is-rounded is-dark">
+          <span class="icon"><i class="fas fa-file-pdf"></i></span><span>Paper</span></a></span>
+        <span class="link-block"><a href="https://arxiv.org/abs/2409.10972" target="_blank" class="external-link button is-normal is-rounded is-dark">
+          <span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span></a></span>
+        <span class="link-block"><a href="https://github.com/csccm-iitd/GPO" target="_blank" class="external-link button is-normal is-rounded is-dark">
+          <span class="icon"><i class="fab fa-github"></i></span><span>Code</span></a></span>
+        <span class="link-block"><a href="https://colab.research.google.com/github/csccm-iitd/GPO/blob/main/notebooks/quickstart.ipynb" target="_blank" class="external-link button is-normal is-rounded is-dark">
+          <span class="icon"><i class="fas fa-play"></i></span><span>Colab</span></a></span>
+      </div>
+      <p class="release-note"><span class="tag-new">Version 2</span> Exact inference, joint posterior draws by
+        Matheron's rule, and 3–14× lower error than the published results on every benchmark.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top: 0.5rem">
+  <div class="container is-max-desktop">
+    <div class="teaser-grid">
+      <div>
+        <div class="media-frame">
+          <video class="media" id="hero-video" muted loop playsinline autoplay preload="auto" poster="static/images/matheron_navier_stokes_still.png">
+            <source src="static/videos/matheron_navier_stokes.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="scrub">
+          <label for="tscrub">correction</label>
+          <input id="tscrub" type="range" min="0" max="1000" value="1000">
+          <span class="num" id="tval">t = 1.00</span>
+        </div>
+      </div>
+      <div>
+        <h3>Whole fields, drawn from the posterior</h3>
+        <p>A GPO is a Gaussian process over the solution operator of a PDE. Its posterior returns joint draws of the
+          output field: four prior draws of Navier–Stokes vorticity become exact posterior draws by one correction,
+          \(f + k(\cdot, X)K^{-1}(y - f(X) - \varepsilon)\).</p>
+        <p>Drag the slider to apply the correction step by step.</p>
+      </div>
+    </div>
+    <div class="stat-row"><!--STATS--></div>
+  </div>
+</section>
+
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>The growing demand for accurate, efficient, and scalable solutions in computational mechanics highlights the
+            need for advanced operator learning algorithms that can efficiently handle large datasets while providing
+            reliable uncertainty quantification. This paper introduces a novel Gaussian Process (GP) based neural operator
+            for solving parametric differential equations. The approach proposed leverages the expressive capability of
+            deterministic neural operators and the uncertainty awareness of conventional GP. In particular, we propose a
+            &ldquo;neural operator-embedded kernel&rdquo; wherein the GP kernel is formulated in the latent space learned
+            using a neural operator. Further, we exploit a stochastic dual descent (SDD) algorithm for simultaneously
+            training the neural operator parameters and the GP hyperparameters. Our approach addresses the (a) resolution
+            dependence and (b) cubic complexity of traditional GP models, allowing for input-resolution independence and
+            scalability in high-dimensional and non-linear parametric systems, such as those encountered in computational
+            mechanics. We apply our method to a range of non-linear parametric partial differential equations (PDEs) and
+            demonstrate its superiority in both computational efficiency and accuracy compared to standard GP models and
+            wavelet neural operators. Our experimental results highlight the efficacy of this framework in solving complex
+            PDEs while maintaining robustness in uncertainty estimation, positioning it as a scalable and reliable
+            operator-learning algorithm for computational mechanics.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop has-text-centered">
+    <h2 class="title is-3">Matheron's rule</h2>
+    <p class="section-lead">A posterior draw is a prior draw plus a correction computed from its residuals at the data.</p>
+    <div class="eqn-block">\[ f \mid y \;=\; \underbrace{f}_{\text{prior draw}} \;+\; \underbrace{k(\cdot, X)\,K^{-1}\big(y - f(X) - \varepsilon\big)}_{\text{correction}}, \qquad K = k(X, X) + \sigma^2 I \]</div>
+    <div class="media-frame" style="margin-top: 1rem">
+      <video class="media" autoplay muted loop playsinline preload="metadata" poster="static/images/matheron_toy_still.png">
+        <source src="static/videos/matheron_toy.mp4" type="video/mp4">
+      </video>
+    </div>
+    <p class="caption has-text-left"><b>One draw, step by step.</b> A prior draw \(f\) disagrees with the data by the
+      residuals \(r = y - f(X) - \varepsilon\), where \(\varepsilon\) is a draw of the observation noise. The kernel spreads
+      the residuals into a smooth correction \(k(\cdot, X)K^{-1}r\) that matches them at the data and fades away from it.
+      The sum follows the data where there is data and keeps the prior's variability elsewhere. Repeating with fresh
+      \((f, \varepsilon)\) gives independent draws that fill the exact posterior.</p>
+
+    <h3 class="title is-5" style="margin-top: 2.2rem">Try it</h3>
+    <div class="media-frame toy has-text-left">
+      <canvas id="toycv" role="img" aria-label="Interactive Gaussian process: prior draws, residuals and posterior draws"></canvas>
+      <div class="toyctl">
+        <label for="toyt">correction <span class="num" id="toytv">t = 1.00</span></label>
+        <input id="toyt" type="range" min="0" max="100" value="100">
+        <label for="toyl">length scale <span class="num" id="toylv">0.10</span></label>
+        <input id="toyl" type="range" min="4" max="30" value="10">
+        <span class="toggles">
+          <label><input id="toyres" type="checkbox" checked>residuals and correction</label>
+          <label><input id="toyband" type="checkbox" checked>exact posterior</label>
+          <button class="btn-k" id="toynew" type="button">New draws</button>
+        </span>
+      </div>
+    </div>
+    <p class="caption has-text-left">Click to add an observation, drag to move it, double-click to remove it. Each draw
+      keeps its random numbers, so moving a point shows the same draws being re-conditioned.</p>
+
+    <h3 class="title is-5" style="margin-top: 2.2rem">For operators</h3>
+    <p class="section-lead" style="margin-bottom: 0">Each training example is a pair of functions, the input \(a\) and its
+      output field \(u\). The same rule conditions a prior over operators on all training pairs at once, and every draw is
+      a whole output field.</p>
+  </div>
+</section>
+
+<section class="section hero is-light">
+  <div class="container is-max-desktop has-text-centered">
+    <h2 class="title is-3">Method</h2>
+    <p class="section-lead">A zero-mean Gaussian process whose kernel is built from a neural operator.</p>
+    <div class="eqn-block">\[ k\big((a,x),(a',x')\big) \;=\; \phi(a,x)^\top \Lambda\, \phi(a',x') \;+\; \big[\, s_a^2\, k_a\big(\psi(a), \psi(a')\big) + s_e^2\, \mathbb{1}[a = a'] \,\big]\, k_x(x, x') \]</div>
+    <div class="cards has-text-left">
+      <div class="card-k"><div class="tag-k">Kernel</div><h4>Operator-embedded</h4>
+        <p>\(\phi\) are the pointwise features of a wavelet neural operator and \(\psi\) an embedding of them. The first
+          term is a Bayesian projection layer; the second correlates inputs through the operator's latent space and
+          output points through \(k_x\).</p></div>
+      <div class="card-k"><div class="tag-k">Exact</div><h4>No approximation</h4>
+        <p>\(K = K_a \otimes K_x + \Psi\Psi^\top + \sigma^2 I\) is handled with two eigendecompositions and a rank-\(c\)
+          Woodbury correction: likelihood, gradients, posterior and draws without forming the \(Nd \times Nd\) matrix.</p></div>
+      <div class="card-k"><div class="tag-k">Scalable</div><h4>Stochastic dual descent</h4>
+        <p>For large \(N\), stochastic dual descent solves the same system with operator features streamed, in
+          \(\mathcal{O}(Nd)\) memory.</p></div>
+    </div>
+</div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Accuracy</h2>
+    <p class="section-lead has-text-centered">Relative \(L_2\) test error (%), mean ± std over three seeds, against the values
+      reported in the paper.</p>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead>
+          <tr class="grp"><th></th><th>This release</th><th colspan="3">Reported in the paper</th></tr>
+          <tr><th>Benchmark</th><th>GPO</th><th>GPO</th><th>WNO</th><th>GP</th></tr>
+        </thead>
+        <tbody><!--ACC_ROWS--></tbody>
+      </table>
+    </div>
+    <p class="footnote">Paper values are as published; this release uses the standard splits listed in the
+      repository. On the Darcy split at 85 × 85, FNO reports 1.08, LSM 0.65 and Transolver 0.57.</p>
+
+    <h3 class="title is-4 has-text-centered" style="margin-top: 2.4rem">Test predictions</h3>
+    <div class="tabs-k">
+      <button class="active" data-pane="g-navier_stokes">Navier–Stokes</button>
+      <button data-pane="g-darcy">Darcy</button>
+      <button data-pane="g-darcy_notch">Darcy (notch)</button>
+      <button data-pane="g-burgers">Burgers</button>
+      <button data-pane="g-advection_width">Advection (width)</button>
+      <button data-pane="g-advection">Advection (bump)</button>
+    </div>
+    <!--GALLERY_PANES-->
+  </div>
+</section>
+
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Uncertainty</h2>
+    <p class="section-lead has-text-centered">Proper scores on the test set and how well the predicted uncertainty ranks
+      the error of each field.</p>
+    <div class="table-wrap" style="background: #fff">
+      <table class="results-table">
+        <thead><tr><th>Benchmark</th><th>NLL ↓</th><th>CRPS ↓</th><th>95% coverage</th><th>ρ(σ, error)</th></tr></thead>
+        <tbody><!--UQ_ROWS--></tbody>
+      </table>
+    </div>
+    <p class="footnote">NLL and CRPS per grid point in physical units. Coverage of the 95% interval after one scale
+      factor fitted on validation fields. ρ: Spearman correlation, over test fields, between predicted variance and
+      squared error.</p>
+
+    <h3 class="title is-4 has-text-centered" style="margin-top: 2.4rem">Where the model is unsure</h3>
+    <p class="section-lead has-text-centered">On the notched domain and on wave advection the error concentrates near
+      boundaries and discontinuities, and the posterior learns an amplitude that widens the interval there. On
+      Navier–Stokes, Burgers and Darcy the error is statistically homogeneous over the field; the uncertainty then lies in
+      its size and spatial correlation, which the sampled errors in the gallery show.</p>
+    <div class="media-frame"><img class="media" src="static/images/uncertainty_ranking.png" alt="Predicted against actual error per test field" loading="lazy"></div>
+    <p class="caption"><b>Predicted σ against actual error</b>, one point per test field: σ ranks the hard cases. On
+      Navier–Stokes and Darcy the error varies little between test fields and σ is nearly constant.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Applications</h2>
+
+    <h3 class="title is-4" style="margin-top: 1.4rem">Sensor fusion</h3>
+    <p class="section-lead" style="margin-left: 0">A few measurements of the unknown output correct the whole predicted
+      field exactly, with no retraining. Sensors go where the posterior variance is largest; every draw is updated by
+      Matheron's rule.</p>
+    <div class="media-frame">
+      <video class="media" autoplay muted loop playsinline preload="metadata" poster="static/images/sensors_navier_stokes_still.png">
+        <source src="static/videos/sensors_navier_stokes.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="media-frame" style="margin-top: 1rem"><img class="media" src="static/images/sensor_fusion.png" alt="Error and coverage against number of sensors" loading="lazy"></div>
+    <p class="caption"><b>Error and 95% coverage against the number of sensors</b>, 50 test fields. Baseline: the operator
+      corrected by kriging its residual at the sensors. On Navier–Stokes, 128 uncertainty-guided sensors reduce the
+      error from 0.30% to 0.12%, against 0.15% for random sensors and for residual kriging.</p>
+
+    <h3 class="title is-4" style="margin-top: 2.4rem">Quantities computed from the field</h3>
+    <p class="section-lead" style="margin-left: 0">Intervals for an energy, a maximum or a gradient need joint draws.
+      Draws with the right pointwise variance but independent grid points give miscalibrated intervals.</p>
+    <div class="media-frame"><img class="media" src="static/images/functionals.png" alt="Coverage of 90% intervals for derived quantities" loading="lazy"></div>
+    <p class="caption"><b>Coverage of 90% intervals</b> over the test set. Blue: joint Matheron draws. Orange: same
+      pointwise mean and variance, independent across grid points.</p>
+
+    <h3 class="title is-4" style="margin-top: 2.4rem">New simulations without retraining</h3>
+    <p class="section-lead" style="margin-left: 0">New fields enter through the posterior. Stochastic dual descent
+      conditions on tens of thousands of fields where the exact solve runs out of memory.</p>
+    <div class="media-frame"><img class="media" src="static/images/data_scaling.png" alt="Test error and memory against the number of conditioning fields" loading="lazy"></div>
+    <p class="caption"><b>Navier–Stokes</b>, operator trained on 3000 fields and kept fixed.</p>
+  </div>
+</section>
+
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Any input resolution</h2>
+    <p class="section-lead has-text-centered">Trained on one discretisation, the GPO takes input functions sampled on
+      coarser or finer grids, zero-shot, and predicts the output on its training grid.</p>
+    <div class="media-frame"><img class="media" src="static/images/resolution.png" alt="Test error and coverage against input resolution" loading="lazy"></div>
+    <p class="caption"><b>Test error and 95% coverage against the input resolution.</b> The dashed line marks the training
+      resolution. Periodic inputs are resampled in Fourier space; inputs on bounded domains are interpolated.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">What is new in this release</h2>
+    <ul class="changes">
+      <li><b>Kernel</b><span>The operator-embedded kernel is extended with an operator-feature term, a spatial factor,
+        a per-input term and, where the held-out evidence supports it, an amplitude that varies with the input and the
+        position. The prior stays zero-mean.</span></li>
+      <li><b>Inference</b><span>Exact and numerically stable likelihood, posterior and draws; stochastic dual descent
+        for large \(N\).</span></li>
+      <li><b>Sampling</b><span>Matheron's rule with prior draws from the learned kernel and sampled observation noise
+        gives exact joint posterior draws, verified against a dense Gaussian process.</span></li>
+      <li><b>Evaluation</b><span>Standard splits, three seeds, held-out evidence for the kernel hyperparameters and an
+        input-resolution study. The code accompanying the journal article remains in
+        the repository history.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="section hero is-light" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <div class="bibtex-header">
+      <h2 class="title">BibTeX</h2>
+      <button class="copy-bibtex-btn" onclick="copyBibTeX()" title="Copy BibTeX to clipboard">
+        <i class="fas fa-copy"></i><span class="copy-text">Copy</span>
+      </button>
+    </div>
+    <pre id="bibtex-code"><code>@article{kumar2025gpo,
+  title   = {Towards {G}aussian Process for operator learning: an uncertainty aware resolution independent
+             operator learning algorithm for computational mechanics},
+  author  = {Kumar, Sawan and Nayek, Rajdip and Chakraborty, Souvik},
+  journal = {Computer Methods in Applied Mechanics and Engineering},
+  year    = {2025},
+  doi     = {10.1016/j.cma.2024.117664},
+  eprint  = {2409.10972},
+  archivePrefix = {arXiv}
+}</code></pre>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered is-size-7">
+      <p>This page was built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic
+        Project Page Template</a>, which was adopted from the <a href="https://nerfies.github.io" target="_blank">Nerfies</a> project page.
+        It is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons
+        Attribution-ShareAlike 4.0 International License</a>.</p>
+    </div>
+  </div>
+</footer>
+</main>
+
+<script src="static/js/gpo.js"></script>
+</body>
+</html>

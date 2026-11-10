@@ -1,0 +1,10 @@
+checkpoints/
+datasets
+*.egg-info/
+.ipynb_checkpoints/
+logs/
+*.pt
+*.pyc
+__pycache__/
+results/**/*.pt
+runs/

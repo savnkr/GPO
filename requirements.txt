@@ -1,4 +1,10 @@
-torch==1.10.0+cu113
-gpytorch==1.6.0
-matplotlib==3.4.3
-pytorch_wavelets==1.3.0
+torch>=2.1
+numpy
+scipy
+h5py
+pytorch_wavelets
+PyWavelets
+matplotlib>=3.7
+imageio
+imageio-ffmpeg
+pytest
