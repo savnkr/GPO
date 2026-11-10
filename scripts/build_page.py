@@ -1,10 +1,10 @@
-"""Writes project_page/index.html from scripts/page_template.html and results/summary.json and copies figures and videos into project_page/static.
+"""Writes docs/index.html from scripts/page_template.html and results/summary.json and copies figures and videos into docs/static.
 
     python scripts/collect.py && python scripts/build_page.py
 """
 import glob, json, os, shutil
 
-TEMPLATE, PAGE, STATIC = "scripts/page_template.html", "project_page/index.html", "project_page/static"
+TEMPLATE, PAGE, STATIC = "scripts/page_template.html", "docs/index.html", "docs/static"
 NAMES = {"navier_stokes": "Navier–Stokes", "darcy": "Darcy flow", "darcy_notch": "Darcy, notched domain",
          "burgers": "Burgers", "advection_width": "Wave advection, varying width",
          "advection": "Wave advection, wave and bump"}
