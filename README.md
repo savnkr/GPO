@@ -103,6 +103,7 @@ gpo/operators/        WNO, WNO with a Fourier path, enhanced WNO, FNO
 experiments/          training, applications, resolution study
 figures/              figures and animations; captions in assets/CAPTIONS.md
 tests/                exactness tests against a dense Gaussian process
+docs/                 project page (built by scripts/build_page.py)
 ```
 
 ## What is new in this release
