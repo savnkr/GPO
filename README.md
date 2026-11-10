@@ -6,10 +6,10 @@ Sawan Kumar · Rajdip Nayek · Souvik Chakraborty<br>
 <i>Computer Methods in Applied Mechanics and Engineering</i>, 2025</p>
 
 <p align="center">
-  <a href="https://csccm-iitd.github.io/GPO/"><img src="https://img.shields.io/badge/Project-Page-3b5bdb?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Project page"></a>
+  <a href="https://savnkr.github.io/GPO/"><img src="https://img.shields.io/badge/Project-Page-3b5bdb?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Project page"></a>
   <a href="https://doi.org/10.1016/j.cma.2024.117664"><img src="https://img.shields.io/badge/Paper-CMAME-1f2430?style=for-the-badge&logo=elsevier&logoColor=white" alt="Paper"></a>
   <a href="https://arxiv.org/abs/2409.10972"><img src="https://img.shields.io/badge/arXiv-2409.10972-b31b1b?style=for-the-badge&logo=arxiv&logoColor=white" alt="arXiv"></a>
-  <a href="https://colab.research.google.com/github/csccm-iitd/GPO/blob/main/notebooks/quickstart.ipynb"><img src="https://img.shields.io/badge/Quickstart-Colab-F9AB00?style=for-the-badge&logo=googlecolab&logoColor=white" alt="Colab"></a>
+  <a href="https://colab.research.google.com/github/savnkr/GPO/blob/main/notebooks/quickstart.ipynb"><img src="https://img.shields.io/badge/Quickstart-Colab-F9AB00?style=for-the-badge&logo=googlecolab&logoColor=white" alt="Colab"></a>
 </p>
 
 <p align="center"><img src="assets/media/matheron_navier_stokes.gif" width="860" alt="Matheron's rule on Navier-Stokes"></p>
@@ -22,7 +22,7 @@ draws of whole fields** through Matheron's rule.
 > **Version 2.** This release extends the method of the journal article with an operator-feature term in the kernel,
 > exact inference, joint posterior draws by Matheron's rule and stochastic dual descent for large training sets. The
 > code accompanying the article remains in the repository history. Full results are on the
-> [project page](https://csccm-iitd.github.io/GPO/).
+> [project page](https://savnkr.github.io/GPO/).
 
 ## Highlights
 
@@ -55,12 +55,12 @@ handles large training sets.
 <p align="center"><sub>Navier–Stokes test prediction: the actual error next to a sampled error from the posterior.</sub></p>
 
 Tables, all benchmarks, ablations, input-resolution and sensor-fusion studies are on the
-[project page](https://csccm-iitd.github.io/GPO/).
+[project page](https://savnkr.github.io/GPO/).
 
 ## Installation
 
 ```bash
-git clone https://github.com/csccm-iitd/GPO.git
+git clone https://github.com/savnkr/GPO.git
 cd GPO
 pip install -e ".[test]"   # or: pip install -r requirements.txt
 pytest                      # exactness tests against a dense Gaussian process

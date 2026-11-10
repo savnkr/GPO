@@ -9,7 +9,7 @@ md, code = nbf.v4.new_markdown_cell, nbf.v4.new_code_cell
 cells = [
     md("""# Gaussian process operator in a minute
 
-[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/csccm-iitd/GPO/blob/main/notebooks/quickstart.ipynb)
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/savnkr/GPO/blob/main/notebooks/quickstart.ipynb)
 
 A GPO places a Gaussian process prior over the solution operator of a PDE,
 
@@ -22,7 +22,7 @@ derived quantity."""),
     code("""try:
     import gpo
 except ImportError:
-    %pip install -q git+https://github.com/csccm-iitd/GPO
+    %pip install -q git+https://github.com/savnkr/GPO
 import math, torch, matplotlib.pyplot as plt
 from gpo import GPO, SensorUpdate, greedy_sensors
 from gpo.operators import FNO
